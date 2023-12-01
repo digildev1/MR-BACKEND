@@ -6,8 +6,8 @@ const mrSchema = new mongoose.Schema({
     DIV: String,
     STATE: String,
     MRCODE: {
-        unique: true
         type: String,
+        unique: true
     },
     PASSWORD: {
         type: String,
