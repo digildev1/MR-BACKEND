@@ -11,7 +11,7 @@ const PatientSchema = new mongoose.Schema({
     PatientType: String,
 
     Repurchase: [{
-        DurationOfTherapy: Number,
+        DurationOfTherapy: string,
         TotolCartiridgesPurchase: String,
         DateOfPurchase: Date,
         TherapyStatus: String,
