@@ -89,21 +89,35 @@ const getDoctorForThisMr = async (req, res) => {
     try {
         const id = req.params['id'];
         const mr = await MrModel.findById({ _id: id }).populate('doctors').select("-_id -DIV -STATE -MRCODE -PASSWORD -MRNAME -HQ -DESG -DOJ -EFF_DATE -loginLogs");
-        if (!mr) return res.status(400).json({
-            msg: "No Doctor Found For This MR",
-            success: false
-        })
-        return res.status(200).json(mr);
-    }
-    catch (error) {
-        const errMsg = error.message
-        console.log("Error in loginMr");
+
+        if (!mr) {
+            return res.status(400).json({
+                msg: "No Doctor Found For This MR",
+                success: false
+            });
+        }
+
+        
+        const doctorsArray = mr.doctors.map(doctor => ({
+            id: doctor._id
+            doctorName: doctor.name,
+            doctorSpecialty: doctor.specialty,
+            doctorLocality: doctor.LOCALITY,
+            doctorState: doctor.STATE,
+            doctorMobileNo:doctor.MOBILENO,
+            
+        }));
+
+        return res.status(200).json(doctorsArray);
+    } catch (error) {
+        const errMsg = error.message;
+        console.log("Error in getDoctorForThisMr");
         return res.status(500).json({
             success: false,
             errMsg
-        })
+        });
     }
-}
+};
 
 const getAllMR = async (req, res) => {
 
