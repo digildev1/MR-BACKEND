@@ -187,6 +187,23 @@ const dataPushToPatient = async (req, res) => {
 };
 
 
+const getPaitentById = async (req, res) => {
+
+    try {
+        const { id } = req.params['id'];
+        const patient = await PatientModel.findById({ _id: id });
+        return res.status(200).json(patient)
+    }
+    catch (error) {
+        const errMsg = error.message
+        console.log("Error in getPaitentById");
+        return res.status(500).json({
+            success: false,
+            errMsg
+        })
+    }
+}
+
 
 const getAllPatient = async (req, res) => {
     try {
@@ -209,5 +226,6 @@ const getAllPatient = async (req, res) => {
 module.exports = {
     createPatients,
     getAllPatient,
-    dataPushToPatient
+    dataPushToPatient,
+    getPaitentById
 }
