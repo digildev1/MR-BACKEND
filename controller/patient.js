@@ -190,7 +190,7 @@ const dataPushToPatient = async (req, res) => {
 const getPaitentById = async (req, res) => {
 
     try {
-        const { id } = req.params['id'];
+        const { id } = req.params;
         const patient = await PatientModel.findById({ _id: id });
         return res.status(200).json(patient)
     }
