@@ -87,8 +87,11 @@ const loginMr = async (req, res) => {
 
 const getDoctorForThisMr = async (req, res) => {
     try {
+
         const id = req.params['id'];
+        console.log(id);
         const mr = await MrModel.findById({ _id: id }).populate('doctors').select("-_id -DIV -STATE -MRCODE -PASSWORD -MRNAME -HQ -DESG -DOJ -EFF_DATE -loginLogs");
+        console.log(mr);
 
         if (!mr) {
             return res.status(400).json({
@@ -97,11 +100,11 @@ const getDoctorForThisMr = async (req, res) => {
             });
         }
 
-        
+
         const doctorsArray = mr.doctors.map(doctor => ({
             id: doctor._id,
-            doctorName: doctor.name,
-            doctorSpecialty: doctor.specialty,
+            doctorName: doctor.DRNAME,
+            doctorSpecialty: doctor.SPECIALITY,
             doctorLocality: doctor.LOCALITY,
             doctorState: doctor.STATE,
             doctorMobileNo: doctor.MOBILENO,
