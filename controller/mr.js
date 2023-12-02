@@ -88,7 +88,7 @@ const loginMr = async (req, res) => {
 const getDoctorForThisMr = async (req, res) => {
     try {
         const id = req.params['id'];
-        const mr = await MrModel.findById({ _id: id }).populate('doctors').select("-_id -DIV -STATE -MRCODE -PASSWORD -MRNAME -HQ -DESG -DOJ -EFF_DATE");
+        const mr = await MrModel.findById({ _id: id }).populate('doctors').select("-_id -DIV -STATE -MRCODE -PASSWORD -MRNAME -HQ -DESG -DOJ -EFF_DATE -loginLogs");
         if (!mr) return res.status(400).json({
             msg: "No Doctor Found For This MR",
             success: false
@@ -104,7 +104,6 @@ const getDoctorForThisMr = async (req, res) => {
         })
     }
 }
-
 
 const getAllMR = async (req, res) => {
 
