@@ -99,13 +99,13 @@ const getDoctorForThisMr = async (req, res) => {
 
         
         const doctorsArray = mr.doctors.map(doctor => ({
-            id: doctor._id
+            id: doctor._id,
             doctorName: doctor.name,
             doctorSpecialty: doctor.specialty,
             doctorLocality: doctor.LOCALITY,
             doctorState: doctor.STATE,
-            doctorMobileNo:doctor.MOBILENO,
-            
+            doctorMobileNo: doctor.MOBILENO,
+
         }));
 
         return res.status(200).json(doctorsArray);
