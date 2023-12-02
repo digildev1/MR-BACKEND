@@ -93,7 +93,7 @@ const getDoctorForThisMr = async (req, res) => {
             msg: "No Doctor Found For This MR",
             success: false
         })
-        return res.status(400).json(mr);
+        return res.status(200).json(mr);
     }
     catch (error) {
         const errMsg = error.message
