@@ -59,7 +59,59 @@ const createPatients = async (req, res) => {
 }
 
 
+// const dataPushToPatient = async (req, res) => {
+//     const id = req.params['id']
 
+//     const { DurationOfTherapy, TotolCartiridgesPurchase, DateOfPurchase, Delivery, Demo, TherapyStatus, TM, swtich } = req.body;
+
+
+//     const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+
+//     console.log({ dateFormat, DateOfPurchase });
+
+//     const patient = await PatientModel.findById({ _id: id });
+//     if (!patient) return res.status(400);
+
+//     if (swtich == 1) {
+//         //  YES CONDITION
+
+//         if(TherapyStatus === 'Dropped out'){
+
+//         }else{
+//             // goes to therapyStatus other values
+
+
+
+
+
+//         }
+
+
+
+
+
+
+//     } else {
+//         //  NO CONDITION
+
+
+
+
+//     }
+
+
+//     patient.Repurchase.push({
+//         DurationOfTherapy,
+//         TotolCartiridgesPurchase,
+//         DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
+//         Delivery,
+//         Demo,
+//         TherapyStatus,
+//         TM
+//     })
+//     await patient.save();
+//     return res.json(patient);
+// }
 
 
 const dataPushToPatient = async (req, res) => {
@@ -135,23 +187,6 @@ const dataPushToPatient = async (req, res) => {
 };
 
 
-const getPaitentById = async (req, res) => {
-
-    try {
-        const { id } = req.params;
-        const patient = await PatientModel.findById({ _id: id });
-        return res.status(200).json(patient)
-    }
-    catch (error) {
-        const errMsg = error.message
-        console.log("Error in getPaitentById");
-        return res.status(500).json({
-            success: false,
-            errMsg
-        })
-    }
-}
-
 
 const getAllPatient = async (req, res) => {
     try {
@@ -169,6 +204,24 @@ const getAllPatient = async (req, res) => {
 }
 
 
+const getPaitentById = async (req, res) => {
+
+    try {
+        const { id } = req.params;
+        console.log("id: ", id);
+        const patient = await PatientModel.findById({ _id: id });
+        console.log(patient);
+        return res.status(200).json(patient)
+    }
+    catch (error) {
+        const errMsg = error.message
+        console.log("Error in getPaitentById");
+        return res.status(500).json({
+            success: false,
+            errMsg
+        })
+    }
+}
 
 
 module.exports = {

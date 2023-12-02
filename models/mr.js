@@ -7,7 +7,7 @@ const mrSchema = new mongoose.Schema({
     STATE: String,
     MRCODE: {
         type: String,
-        unique: true
+        unquie: true
     },
     PASSWORD: {
         type: String,
