@@ -181,8 +181,9 @@ const dataPushToPatient = async (req, res) => {
         await patient.save();
         return res.json(patient);
     } catch (error) {
-        console.error("Error in dataPushToPatient:", error);
-        return res.status(500).json({ msg: "Internal Server Error" });
+        const err = error.message
+        console.error("Error in dataPushToPatient:");
+        return res.status(500).json({ msg: "Internal Server Error" err });
     }
 };
 
