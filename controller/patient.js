@@ -10,7 +10,7 @@ const createPatients = async (req, res) => {
         const { PatientName, MobileNumber, PatientAge, PatientType, DurationOfTherapy, TotolCartiridgesPurchase, DateOfPurchase, Delivery, Demo, TherapyStatus, TM } = req.body
         const id = req.params['id'];
 
-        const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+        const dateFormat = moment(DateOfPurchase, 'YYYY-MM-DD', true);
 
         console.log({ dateFormat, DateOfPurchase });
 
@@ -134,7 +134,7 @@ const dataPushToPatient = async (req, res) => {
     return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
   }
 
-  const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+  const dateFormat = moment(DateOfPurchase, 'YYYY-MM-DD', true);
 
   console.log({ dateFormat, DateOfPurchase });
 
@@ -167,7 +167,6 @@ const dataPushToPatient = async (req, res) => {
                 TotolCartiridgesPurchase,
                 DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
                 Delivery,
-                Demo,
                 TherapyStatus,
 
             };
