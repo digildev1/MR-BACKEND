@@ -130,9 +130,13 @@ const dataPushToPatient = async (req, res) => {
         SubComments
     } = req.body;
 
-    const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+    if (isNaN(DurationOfTherapy)) {
+    return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
+  }
 
-    console.log({ dateFormat, DateOfPurchase });
+  const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+
+  console.log({ dateFormat, DateOfPurchase });
 
     try {
         const patient = await PatientModel.findById({ _id: id });
