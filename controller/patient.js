@@ -59,61 +59,6 @@ const createPatients = async (req, res) => {
 }
 
 
-// const dataPushToPatient = async (req, res) => {
-//     const id = req.params['id']
-
-//     const { DurationOfTherapy, TotolCartiridgesPurchase, DateOfPurchase, Delivery, Demo, TherapyStatus, TM, swtich } = req.body;
-
-
-//     const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
-
-//     console.log({ dateFormat, DateOfPurchase });
-
-//     const patient = await PatientModel.findById({ _id: id });
-//     if (!patient) return res.status(400);
-
-//     if (swtich == 1) {
-//         //  YES CONDITION
-
-//         if(TherapyStatus === 'Dropped out'){
-
-//         }else{
-//             // goes to therapyStatus other values
-
-
-
-
-
-//         }
-
-
-
-
-
-
-//     } else {
-//         //  NO CONDITION
-
-
-
-
-//     }
-
-
-//     patient.Repurchase.push({
-//         DurationOfTherapy,
-//         TotolCartiridgesPurchase,
-//         DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
-//         Delivery,
-//         Demo,
-//         TherapyStatus,
-//         TM
-//     })
-//     await patient.save();
-//     return res.json(patient);
-// }
-
-
 const dataPushToPatient = async (req, res) => {
     const id = req.params['id'];
 
@@ -129,6 +74,18 @@ const dataPushToPatient = async (req, res) => {
         swtich,
         SubComments
     } = req.body;
+
+    console.log({
+        DurationOfTherapy,
+        TotolCartiridgesPurchase,
+        DateOfPurchase,
+        Delivery,
+        Demo,
+        TherapyStatus,
+        TM,
+        swtich,
+        SubComments
+    });
 
     if (isNaN(DurationOfTherapy)) {
     return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
