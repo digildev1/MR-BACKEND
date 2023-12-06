@@ -132,7 +132,7 @@ const dataPushToPatient = async (req, res) => {
             patient.Repurchase.push(repurchaseData);
             await patient.save();
         }
-        return res.json(patient);
+        return res.json({patient , success: true});
     } catch (error) {
         const err = error.message
         console.error("Error in dataPushToPatient:");
