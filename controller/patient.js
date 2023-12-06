@@ -114,7 +114,7 @@ const dataPushToPatient = async (req, res) => {
             }
             patient.Repurchase.push(repurchaseData);
             await patient.save();
-        } else {
+        } else if (Swtich === 0) {
             // NO CONDITION
             const repurchaseData = {
                 TotolCartiridgesPurchase,
