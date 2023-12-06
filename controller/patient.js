@@ -69,7 +69,7 @@ const dataPushToPatient = async (req, res) => {
         Demo,
         TherapyStatus,
         TM,
-        Swtich,
+        Switch,
         SubComments
     } = req.body;
 
@@ -81,7 +81,7 @@ const dataPushToPatient = async (req, res) => {
         Demo,
         TherapyStatus,
         TM,
-        Swtich,
+        Switch,
         SubComments
     });
 
@@ -95,7 +95,7 @@ const dataPushToPatient = async (req, res) => {
     try {
         const patient = await PatientModel.findById({ _id: id });
         if (!patient) return res.status(400).json({ msg: "Patient not found" });
-        if (Swtich === 1) {
+        if (Switch === 1) {
 
             // YES CONDITION
             const repurchaseData = {
@@ -114,7 +114,7 @@ const dataPushToPatient = async (req, res) => {
             }
             patient.Repurchase.push(repurchaseData);
             await patient.save();
-        } else if (Swtich === 0) {
+        } else if (Switch === 0) {
             // NO CONDITION
             const repurchaseData = {
                 TotolCartiridgesPurchase,
@@ -139,8 +139,6 @@ const dataPushToPatient = async (req, res) => {
         return res.status(500).json({ msg: "Internal Server Error", err });
     }
 };
-
-
 
 const getAllPatient = async (req, res) => {
     try {
