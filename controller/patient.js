@@ -71,7 +71,7 @@ const dataPushToPatient = async (req, res) => {
         Demo,
         TherapyStatus,
         TM,
-        swtich,
+        Swtich,
         SubComments
     } = req.body;
 
@@ -83,40 +83,36 @@ const dataPushToPatient = async (req, res) => {
         Demo,
         TherapyStatus,
         TM,
-        swtich,
+        Swtich,
         SubComments
     });
 
     if (isNaN(DurationOfTherapy)) {
-    return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
-  }
+        return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
+    }
 
-  const dateFormat = moment(DateOfPurchase, 'YYYY-MM-DD', true);
-
-  console.log({ dateFormat, DateOfPurchase });
+    const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+    console.log({ dateFormat, DateOfPurchase });
 
     try {
         const patient = await PatientModel.findById({ _id: id });
         if (!patient) return res.status(400).json({ msg: "Patient not found" });
-        if (swtich == 1) {
+        if (Swtich == 1) {
             // YES CONDITION
             const repurchaseData = {
                 DurationOfTherapy,
                 TotolCartiridgesPurchase,
-                DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
+                DateOfPurchase: Date.now(),
                 Delivery,
                 Demo,
                 TherapyStatus,
-
             };
             if (TherapyStatus === 'Dropped out') {
                 repurchaseData.SubComments = SubComments;
             }
-
             if (Delivery === 'Team mate') {
                 repurchaseData.TM = TM
             }
-
             patient.Repurchase.push(repurchaseData);
         } else {
             // NO CONDITION
@@ -124,29 +120,25 @@ const dataPushToPatient = async (req, res) => {
                 TotolCartiridgesPurchase,
                 DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
                 Delivery,
+                Demo,
                 TherapyStatus,
-
             };
             if (TherapyStatus === 'Dropped out') {
                 repurchaseData.SubComments = SubComments;
             }
-
             if (Delivery === 'Team mate') {
                 repurchaseData.TM = TM
             }
-
             patient.Repurchase.push(repurchaseData);
         }
-
         await patient.save();
         return res.json(patient);
     } catch (error) {
         const err = error.message
         console.error("Error in dataPushToPatient:");
-        return res.status(500).json({ msg: "Internal Server Error" ,  err });
+        return res.status(500).json({ msg: "Internal Server Error", err });
     }
 };
-
 
 
 const getAllPatient = async (req, res) => {
