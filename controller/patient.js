@@ -3,14 +3,12 @@ const PatientModel = require("../models/patient");
 const moment = require('moment');
 
 
-
-
 const createPatients = async (req, res) => {
     try {
         const { PatientName, MobileNumber, PatientAge, PatientType, DurationOfTherapy, TotolCartiridgesPurchase, DateOfPurchase, Delivery, Demo, TherapyStatus, TM } = req.body
         const id = req.params['id'];
 
-        const dateFormat = moment(DateOfPurchase, 'YYYY-MM-DD', true);
+        const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
 
         console.log({ dateFormat, DateOfPurchase });
 
@@ -36,11 +34,6 @@ const createPatients = async (req, res) => {
             }
         });
 
-
-
-
-
-
         const savedPatient = await patient.save();
 
         doctor.patients.push(savedPatient._id);
@@ -57,6 +50,8 @@ const createPatients = async (req, res) => {
         })
     }
 }
+
+
 
 
 const dataPushToPatient = async (req, res) => {
@@ -96,11 +91,12 @@ const dataPushToPatient = async (req, res) => {
         const patient = await PatientModel.findById({ _id: id });
         if (!patient) return res.status(400).json({ msg: "Patient not found" });
         if (Switch === 1) {
+
             // YES CONDITION
             const repurchaseData = {
                 DurationOfTherapy,
                 TotolCartiridgesPurchase,
-                DateOfPurchase: dateFormat.toDate(),
+                DateOfPurchase,
                 Delivery,
                 Demo,
                 TherapyStatus,
@@ -117,7 +113,7 @@ const dataPushToPatient = async (req, res) => {
             // NO CONDITION
             const repurchaseData = {
                 TotolCartiridgesPurchase,
-                DateOfPurchase: dateFormat.toDate(),
+                DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
                 Delivery,
                 Demo,
                 TherapyStatus,
@@ -131,13 +127,15 @@ const dataPushToPatient = async (req, res) => {
             patient.Repurchase.push(repurchaseData);
             await patient.save();
         }
-        return res.json({patient , success: true});
+        return res.json(patient);
     } catch (error) {
         const err = error.message
         console.error("Error in dataPushToPatient:");
         return res.status(500).json({ msg: "Internal Server Error", err });
     }
 };
+
+
 
 const getAllPatient = async (req, res) => {
     try {
