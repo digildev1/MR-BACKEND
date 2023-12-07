@@ -96,12 +96,11 @@ const dataPushToPatient = async (req, res) => {
         const patient = await PatientModel.findById({ _id: id });
         if (!patient) return res.status(400).json({ msg: "Patient not found" });
         if (Switch === 1) {
-
             // YES CONDITION
             const repurchaseData = {
                 DurationOfTherapy,
                 TotolCartiridgesPurchase,
-                DateOfPurchase,
+                DateOfPurchase: dateFormat.toDate(),
                 Delivery,
                 Demo,
                 TherapyStatus,
@@ -118,7 +117,7 @@ const dataPushToPatient = async (req, res) => {
             // NO CONDITION
             const repurchaseData = {
                 TotolCartiridgesPurchase,
-                DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
+                DateOfPurchase: dateFormat.toDate(),
                 Delivery,
                 Demo,
                 TherapyStatus,
