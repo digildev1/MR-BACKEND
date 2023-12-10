@@ -81,6 +81,7 @@ const getAllDoctors = async (req, res) => {
     }
 }
 
+
 const getDoctorById = async (req, res) => {
     try {
         const { id } = req.params
@@ -100,31 +101,48 @@ const getDoctorById = async (req, res) => {
 
 
 const getMrReports = async (req, res) => {
-    const { mrId } = req.params
-    try {
-        const mr = await DoctorModel.findById(mrId).populate('patients');
+    const { mrId } = req.params;
 
-        if (!mr) return res.status(400).json({
-            msg: "MR NOT FOUND"
+    try {
+        const mr = await MrModel.findById(mrId).populate({
+            path: 'doctors',
+            populate: {
+                path: 'patients',
+                model: 'Patient'
+            }
         });
+
+        if (!mr) {
+            return res.status(400).json({
+                msg: "MR NOT FOUND"
+            });
+        }
+
         const totalDoctors = mr.doctors.length;
-        const totalPatients = mr.patients.length;
+        const totalPatients = mr.doctors.reduce((acc, doctor) => acc + doctor.patients.length, 0);
+
+        const totalRepurchases = mr.doctors.reduce((acc, doctor) => {
+            return acc + doctor.patients.reduce((patientAcc, patient) => {
+                return patientAcc + (patient.Repurchase ? patient.Repurchase.length : 0);
+            }, 0);
+        }, 0);
 
         res.status(200).json({
             success: true,
             totalDoctors,
-            totalPatients
+            totalPatients,
+            totalRepurchases
         });
-    }
-    catch (error) {
-        const errMsg = error.message
-        console.log("Error in getDoctorById");
+    } catch (error) {
+        const errMsg = error.message;
+        console.log("Error in getMrReports");
         return res.status(500).json({
             success: false,
             errMsg
         });
     }
-}
+};
+
 
 
 
