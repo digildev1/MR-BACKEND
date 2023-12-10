@@ -1,7 +1,6 @@
 const MrModel = require('../models/mr');
 const DoctorModel = require('../models/doctor');
-
-
+const PatienModel = require("../models/patient");
 
 
 const createDoctor = async (req, res) => {
@@ -82,7 +81,6 @@ const getAllDoctors = async (req, res) => {
     }
 }
 
-
 const getDoctorById = async (req, res) => {
     try {
         const { id } = req.params
@@ -101,6 +99,32 @@ const getDoctorById = async (req, res) => {
 }
 
 
+const getMrReports = async (req, res) => {
+    const { mrId } = req.params
+    try {
+        const mr = await DoctorModel.findById(mrId).populate('patients');
+
+        if (!mr) return res.status(400).json({
+            msg: "MR NOT FOUND"
+        });
+        const totalDoctors = mr.doctors.length;
+        const totalPatients = mr.patients.length;
+
+        res.status(200).json({
+            success: true,
+            totalDoctors,
+            totalPatients
+        });
+    }
+    catch (error) {
+        const errMsg = error.message
+        console.log("Error in getDoctorById");
+        return res.status(500).json({
+            success: false,
+            errMsg
+        });
+    }
+}
 
 
 
@@ -108,5 +132,6 @@ module.exports = {
     createDoctor,
     getPatientForThisDoctor,
     getAllDoctors,
-    getDoctorById
+    getDoctorById,
+    getMrReports
 }
