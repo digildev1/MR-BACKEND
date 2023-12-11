@@ -18,6 +18,7 @@ const mrSchema = new mongoose.Schema({
     DESG: String,
     DOJ: String,
     EFF_DATE: String,
+    MOBILENO: String,
     // Zone: String,
     // Region: String,
     // MobileNumber: Number,

@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 const createMr = async (req, res) => {
     try {
-        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE } = req.body;
+        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO } = req.body;
         console.log(typeof PASSWORD);
 
         const mr = await MrModel.findOne({ MRCODE: MRCODE });
@@ -24,7 +24,8 @@ const createMr = async (req, res) => {
             HQ,
             DESG,
             DOJ,
-            EFF_DATE
+            EFF_DATE,
+            MOBILENO,
         });
         // Save the new MR to the database
         await newMr.save();
