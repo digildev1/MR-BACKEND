@@ -140,11 +140,34 @@ const getAllMR = async (req, res) => {
 }
 
 
+const getMrById = async (req, res) => {
+    try {
 
+        const mrId = req.params.mrId;
+        const mr = await MrModel.findById({ _id: mrId }).exec();
+        if (!mr) {
+            res.status(400).json({
+                success: false,
+                msg: "Mr Not Found"
+            })
+        }
+
+        res.json(mr);
+
+    } catch (error) {
+        const errmsg = error.message;
+        console.log("Error in getMrById");
+        return res.status(500).json({
+            success: false,
+            errmsg
+        })
+    }
+}
 
 module.exports = {
     createMr,
     loginMr,
     getDoctorForThisMr,
-    getAllMR
+    getAllMR,
+    getMrById
 }
