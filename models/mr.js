@@ -7,7 +7,7 @@ const mrSchema = new mongoose.Schema({
     STATE: String,
     MRCODE: {
         type: String,
-        unquie: true
+        unique: true
     },
     PASSWORD: {
         type: String,
@@ -19,19 +19,8 @@ const mrSchema = new mongoose.Schema({
     DOJ: String,
     EFF_DATE: String,
     MOBILENO: String,
-    // Zone: String,
-    // Region: String,
-    // MobileNumber: Number,
-    // email: {
-    //     type: String,
-    //     unique: true,
-    // },
-    // ReportingManager: {
-    //     type: String,
-    // },
-    // RegionalManagerName: {
-    //     type: String
-    // },
+
+
     loginLogs: [
         {
             timestamp: {
@@ -52,3 +41,4 @@ const mrSchema = new mongoose.Schema({
 
 
 module.exports = mongoose.model('MR', mrSchema);
+

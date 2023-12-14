@@ -17,7 +17,6 @@ const PatientSchema = new mongoose.Schema({
         TherapyStatus: String,
         Delivery: String,
         TM: String,
-        Demo: String,
         SubComments: String
     }]
 });

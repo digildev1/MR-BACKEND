@@ -1,12 +1,14 @@
 const MrModel = require('../models/mr');
+const DoctorModel = require("../models/doctor")
+const PatientModel = require("../models/patient");
 const bcrypt = require('bcrypt');
-
-
+const fs = require("fs");
+const csv = require('csv-parser');
+const xlsx = require('xlsx');
 
 const createMr = async (req, res) => {
     try {
         const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO } = req.body;
-        console.log(typeof PASSWORD);
 
         const mr = await MrModel.findOne({ MRCODE: MRCODE });
         if (mr) {
@@ -43,7 +45,6 @@ const createMr = async (req, res) => {
         })
     }
 }
-
 
 const loginMr = async (req, res) => {
     try {
@@ -83,8 +84,6 @@ const loginMr = async (req, res) => {
         })
     }
 }
-
-
 
 const getDoctorForThisMr = async (req, res) => {
     try {
@@ -140,7 +139,6 @@ const getAllMR = async (req, res) => {
     }
 }
 
-
 const getMrById = async (req, res) => {
     try {
 
@@ -165,7 +163,6 @@ const getMrById = async (req, res) => {
     }
 }
 
-
 const UpdateMrMobileNumber = async (req, res) => {
 
     try {
@@ -184,6 +181,7 @@ const UpdateMrMobileNumber = async (req, res) => {
 
         // Save the updated document
         const updatedMr = await mr.save();
+        console.log(updatedMr.MOBILENO);
 
         return res.status(200).json({
             success: true,
@@ -203,11 +201,86 @@ const UpdateMrMobileNumber = async (req, res) => {
     }
 }
 
+const handleExcelSheetUpload = async (req, res) => {
+    try {
+        const workbook = xlsx.readFile(req.file.path);
+        const sheetName = workbook.SheetNames[0];
+        const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+        const newMr = await MrModel.find
+        for (const row of sheetData) {
+            let existingMr = await MrModel.findOne({ MRCODE: row.MRCODE });
+
+            if (!existingMr) {
+                existingMr = await new MrModel({
+                    DIV: row.DIV,
+                    STATE: row.STATE,
+                    MRCODE: row.MRCODE,
+                    PASSWORD: row.PASSWORD,
+                    MRNAME: row.MRNAME,
+                    HQ: row.HQ,
+                    DESG: row.DESG,
+                    DOJ: row.DOJ,
+                    EFF_DATE: row.EFF_DATE,
+                    MOBILENO: row.MOBILENO,
+                });
+
+                await existingMr.save();
+            }
+
+            const newDoctor = await new DoctorModel({
+                DRNAME: row.DRNAME,
+                MOBILENO: row.MOBILENO,
+                SCCODE: row.SCCODE,
+                STATE: row.STATE,
+                LOCALITY: row.LOCALITY,
+            });
+
+            await newDoctor.save();
+
+            existingMr.doctors.push(newDoctor._id);
+            await existingMr.save();
+
+            const newPatient = await new PatientModel({
+                PatientName: row.PatientName,
+                MobileNumber: row.MobileNumber,
+                PatientAge: row.PatientAge,
+                PatientType: row.PatientType,
+                Repurchase: [
+                    {
+                        DurationOfTherapy: row.DurationOfTherapy,
+                        TotolCartiridgesPurchase: row.TotolCartiridgesPurchase,
+                        DateOfPurchase: row.DateOfPurchase,
+                        TherapyStatus: row.TherapyStatus,
+                        Delivery: row.Delivery,
+                        TM: row.TM,
+                    }
+                ]
+            });
+
+            await newPatient.save();
+            newDoctor.patients.push(newPatient._id);
+            await newDoctor.save();
+        }
+
+        res.status(200).json({ message: 'Data uploaded successfully' });
+    } catch (error) {
+        console.error(error);
+        const errMsg = error.message;
+        res.status(500).json({ error: 'Internal server error', errMsg });
+    }
+};
+
+
+
+
+
 module.exports = {
     createMr,
     loginMr,
     getDoctorForThisMr,
     getAllMR,
     getMrById,
-    UpdateMrMobileNumber
+    UpdateMrMobileNumber,
+    handleExcelSheetUpload
 }

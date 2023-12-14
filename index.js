@@ -12,12 +12,8 @@ dotenv.config();
 
 app.use(cors());
 
-let cache = apicache.middleware
-app.use(cache('5 minutes'))
 
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ limit: '25mb', extended: false }));
 app.use(express.json())
 // testing
 app.get('/', (req, res) => res.send("hello World"))
@@ -37,14 +33,17 @@ try {
 const mrRouter = require('./routes/mr');
 const doctorRouter = require('./routes/doctor');
 const patientRouter = require("./routes/patient");
+const adminRouter = require("./routes/admin")
 
 app.use('/api', mrRouter);
 app.use('/api', doctorRouter);
 app.use("/api", patientRouter);
+app.use('/api', adminRouter);
 
 
 
 
-app.listen(3333, () => {
-    console.log("server is running at ", 3333)
+
+app.listen(7000, () => {
+    console.log("server is running at ", 7000)
 })
