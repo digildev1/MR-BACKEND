@@ -1,6 +1,8 @@
 const MrModel = require('../models/mr');
 const DoctorModel = require("../models/doctor")
 const PatientModel = require("../models/patient");
+const AdminModel = require("../models/admin");
+
 const bcrypt = require('bcrypt');
 const fs = require("fs");
 const csv = require('csv-parser');
@@ -8,9 +10,11 @@ const xlsx = require('xlsx');
 
 const createMr = async (req, res) => {
     try {
-        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO } = req.body;
-
+        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO, } = req.body;
         const mr = await MrModel.findOne({ MRCODE: MRCODE });
+        const Id = req.params.id;
+        const admin = await AdminModel.findById({ _id: Id });
+
         if (mr) {
             return res.status(400).json({
                 msg: "Mr Already Exists",
@@ -31,6 +35,8 @@ const createMr = async (req, res) => {
         });
         // Save the new MR to the database
         await newMr.save();
+        admin.Mrs.push(newMr._id);
+        await admin.save();
         return res.status(201).json({
             msg: 'MR created successfully',
             success: true,

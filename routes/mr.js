@@ -6,7 +6,7 @@ const { createMr, loginMr, getDoctorForThisMr, getAllMR, getMrById, UpdateMrMobi
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post("/create-mr", createMr);
+router.post("/create-mr/:id", createMr);
 router.post("/login-mr", loginMr);
 router.get("/get-mr-doctor/:id", getDoctorForThisMr);
 router.get("/get-all-mr", getAllMR);
