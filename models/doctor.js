@@ -25,7 +25,7 @@ const doctorSchema = new mongoose.Schema({
     TOTAL_POTENTIAL: Number,
     BUSTODIV: Number,
     PATIENTSPERDAY: Number,
-
+    doc: Date,
 
     // mobileNumber: Number,
     // Gender: String,

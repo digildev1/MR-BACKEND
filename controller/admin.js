@@ -73,13 +73,9 @@ const handleAdminCreateAccounts = async (req, res) => {
 }
 
 const handleAdminLogin = async (req, res) => {
-
-
     try {
-
         const { AdminId, Password } = req.body;
         console.log(req.body);
-
         const admin = await adminModels.findOne({ AdminId });
         console.log({ admin })
         if (admin) {
@@ -112,6 +108,7 @@ const handleAdminLogin = async (req, res) => {
 }
 
 const handleAdminReports = async (req, res) => {
+    s
     try {
         const adminId = req.params.id;
         const admin = await adminModels.findById(adminId);
@@ -120,10 +117,8 @@ const handleAdminReports = async (req, res) => {
             return res.json({ msg: "Admin Not Found" });
         }
 
-        // Find all MRs under the admin
         const mrs = await MrModel.find({ _id: { $in: admin.Mrs } });
 
-        // Find the total number of doctors under each MR
         const mrWithDoctors = await MrModel.aggregate([
             {
                 $match: {
@@ -180,10 +175,114 @@ const handleAdminReports = async (req, res) => {
 };
 
 
-module.exports = {
+const handleAdminSideDetailReports = async (req, res) => {
+    const id = req.params.id;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid admin ID format' });
+    }
+
+    try {
+        const adminData = await adminModels.findById(id).lean().exec();
+
+        if (!adminData) {
+            return res.status(404).json({ error: 'Admin not found or has no related data' });
+        }
+
+        const mrIds = adminData.Mrs || [];
+        const mrData = await MrModel.find({ _id: { $in: mrIds } })
+            .populate({
+                path: 'doctors',
+                model: 'Doctor',
+                populate: {
+                    path: 'patients',
+                    model: 'Patient'
+                }
+            })
+            .exec();
+
+        if (!mrData) {
+            return res.status(404).json({ error: 'MR data not found' });
+        }
+
+        const header = [
+            'adminId',
+            'adminName',
+            'Gender',
+            'MobileNumber',
+            'mrName',
+            'mrCode',
+            'mrHQ',
+            'mrDESG',
+            'mrDoc',
+            'mrTotalDoctor',
+            'doctorName',
+            'doctorScCode',
+            'doctorSpeciality',
+            'doctorLocality',
+            'doctorTotalPatients',
+            'doctorState',
+            'patientName',
+            'patientAge',
+            'PatientType',
+            'patientRepurchaseLength',
+            'patientRepurchaseData',
+
+        ];
+
+        const rows = [header];
+
+        mrData.forEach(mr => {
+            const row = [
+                adminData.AdminId || 'N/A',
+                adminData.Name || 'N/A',
+                adminData.Gender || 'N/A',
+                adminData.MobileNumber || 'N/A',
+                mr.MRNAME || 'N/A',
+                mr.MRCODE || 'N/A',
+                mr.HQ || 'N/A',
+                mr.DESG || 'N/A',
+                mr.doc || 'N/A',
+                mr.doctors.length || 'N/A',
+                mr.doctors[0] ? mr.doctors[0].DRNAME || 'N/A' : 'N/A',
+                mr.doctors[0] ? mr.doctors[0].SCCODE || 'N/A' : 'N/A',
+                mr.doctors[0] ? mr.doctors[0].SPECIALITY || 'N/A' : 'N/A',
+                mr.doctors[0] ? mr.doctors[0].LOCALITY || 'N/A' : 'N/A',
+                mr.doctors[0] ? mr.doctors[0].patients.length || 'N/A' : 'N/A',
+                mr.doctors[0] ? mr.doctors[0].STATE || 'N/A' : 'N/A',
+                mr.doctors[0] && mr.doctors[0].patients[0] ? mr.doctors[0].patients[0].PatientName || 'N/A' : 'N/A',
+                mr.doctors[0] && mr.doctors[0].patients[0] ? mr.doctors[0].patients[0].PatientAge || 'N/A' : 'N/A',
+                mr.doctors[0] && mr.doctors[0].patients[0] ? mr.doctors[0].patients[0].PatientType || 'N/A' : 'N/A',
+                mr.doctors[0] && mr.doctors[0].patients[0] ? mr.doctors[0].patients[0].Repurchase.length || 'N/A' : 'N/A',
+                mr.doctors[0] && mr.doctors[0].patients[0] ? mr.doctors[0].patients[0].Repurchase || 'N/A' : 'N/A',
+
+
+            ];
+
+            rows.push(row);
+        });
+
+        return res.json(rows);
+    } catch (error) {
+        console.error(error);
+        const errMsg = error.message;
+        return res.status(500).json({ success: false, errMsg, error: 'Internal Server Error' });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+module.exports = {
     handleAdminCreateAccounts,
     handleAdminLogin,
     handleAdminReports,
+    handleAdminSideDetailReports
 }
 

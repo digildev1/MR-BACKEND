@@ -10,7 +10,7 @@ const xlsx = require('xlsx');
 
 const createMr = async (req, res) => {
     try {
-        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO, } = req.body;
+        const { DIV, STATE, MRCODE, PASSWORD, MRNAME, HQ, DESG, DOJ, EFF_DATE, MOBILENO } = req.body;
         const mr = await MrModel.findOne({ MRCODE: MRCODE });
         const Id = req.params.id;
         const admin = await AdminModel.findById({ _id: Id });
@@ -32,6 +32,7 @@ const createMr = async (req, res) => {
             DOJ,
             EFF_DATE,
             MOBILENO,
+            doc: Date.now(),
         });
         // Save the new MR to the database
         await newMr.save();
@@ -114,9 +115,7 @@ const getDoctorForThisMr = async (req, res) => {
             doctorLocality: doctor.LOCALITY,
             doctorState: doctor.STATE,
             doctorMobileNo: doctor.MOBILENO,
-
         }));
-
         return res.status(200).json(doctorsArray);
     } catch (error) {
         const errMsg = error.message;
@@ -229,6 +228,7 @@ const handleExcelSheetUpload = async (req, res) => {
                     DOJ: row.DOJ,
                     EFF_DATE: row.EFF_DATE,
                     MOBILENO: row.MOBILENO,
+                    doc: Date.now()
                 });
 
                 await existingMr.save();
@@ -252,6 +252,7 @@ const handleExcelSheetUpload = async (req, res) => {
                 MobileNumber: row.MobileNumber,
                 PatientAge: row.PatientAge,
                 PatientType: row.PatientType,
+                doc: Date.now(),
                 Repurchase: [
                     {
                         DurationOfTherapy: row.DurationOfTherapy,

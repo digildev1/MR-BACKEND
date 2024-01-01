@@ -23,6 +23,7 @@ const createPatients = async (req, res) => {
             MobileNumber,
             PatientAge,
             PatientType,
+            doc: Date.now(),
             Repurchase: {
                 DurationOfTherapy,
                 TotolCartiridgesPurchase,

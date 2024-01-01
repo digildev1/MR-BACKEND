@@ -19,7 +19,7 @@ const mrSchema = new mongoose.Schema({
     DOJ: String,
     EFF_DATE: String,
     MOBILENO: String,
-
+    doc: Date,
 
     loginLogs: [
         {

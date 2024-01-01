@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-
-
 const PatientSchema = new mongoose.Schema({
     PatientName: {
         type: String
@@ -9,6 +7,7 @@ const PatientSchema = new mongoose.Schema({
     MobileNumber: Number,
     PatientAge: Number,
     PatientType: String,
+    doc: Date,
 
     Repurchase: [{
         DurationOfTherapy: Number,

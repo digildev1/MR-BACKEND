@@ -26,6 +26,7 @@ const createDoctor = async (req, res) => {
             TOTAL_POTENTIAL,
             BUSTODIV,
             PATIENTSPERDAY,
+            doc: Date.now(),
         });
 
         const savedDoctor = await newDoctor.save();
