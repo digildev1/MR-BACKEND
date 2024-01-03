@@ -146,7 +146,6 @@ const getAllMR = async (req, res) => {
 
 const getMrById = async (req, res) => {
     try {
-
         const mrId = req.params.mrId;
         const mr = await MrModel.findById({ _id: mrId }).exec();
         if (!mr) {
@@ -155,9 +154,7 @@ const getMrById = async (req, res) => {
                 msg: "Mr Not Found"
             })
         }
-
         res.json(mr);
-
     } catch (error) {
         const errmsg = error.message;
         console.log("Error in getMrById");

@@ -9,7 +9,6 @@ router.post("/admin-create-account", handleAdminCreateAccounts);
 router.post("/admin-login", handleAdminLogin);
 
 
-
 // admin side Reports
 router.get("/admin-reports/:id", handleAdminReports);
 router.get("/admin-mr-doctor-patients-reports/:id", handleAdminSideDetailReports);
