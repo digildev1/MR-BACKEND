@@ -16,7 +16,7 @@ router.get("/get-mr-by-id/:mrId", getMrById);
 router.put("/update-mr-mobile-number", UpdateMrMobileNumber);
 
 
-router.post("/upload-mr-doctor-patients", upload.single('file'), handleExcelSheetUpload);
+router.post("/upload-mr-doctor-patients/:id", upload.single('file'), handleExcelSheetUpload);
 
 
 module.exports = router

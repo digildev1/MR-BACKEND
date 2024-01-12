@@ -209,7 +209,14 @@ const handleExcelSheetUpload = async (req, res) => {
         const sheetName = workbook.SheetNames[0];
         const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-        const newMr = await MrModel.find
+        const id = req.params.id;
+
+        const admin = await AdminModel.findById({ _id: id })
+        if (!admin) return res.status(401).json({ msg: "Admin Not Found" })
+
+
+        console.log(admin);
+
         for (const row of sheetData) {
             let existingMr = await MrModel.findOne({ MRCODE: row.MRCODE });
 
@@ -229,6 +236,9 @@ const handleExcelSheetUpload = async (req, res) => {
                 });
 
                 await existingMr.save();
+                await admin.Mrs.push(existingMr._id);
+
+                console.log(admin.Mrs)
             }
 
             const newDoctor = await new DoctorModel({
@@ -266,6 +276,8 @@ const handleExcelSheetUpload = async (req, res) => {
             newDoctor.patients.push(newPatient._id);
             await newDoctor.save();
         }
+
+        await admin.save();
 
         res.status(200).json({ message: 'Data uploaded successfully' });
     } catch (error) {

@@ -85,9 +85,7 @@ const dataPushToPatient = async (req, res) => {
         return res.status(400).json({ msg: "DurationOfTherapy must be a valid number" });
     }
 
-    const dateFormat = new Date(DateOfPurchase);
-
-    // const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
+    const dateFormat = moment(DateOfPurchase, 'DD/MM/YYYY', true);
     console.log({ dateFormat, DateOfPurchase });
 
     try {
@@ -99,7 +97,7 @@ const dataPushToPatient = async (req, res) => {
             const repurchaseData = {
                 DurationOfTherapy,
                 TotolCartiridgesPurchase,
-                DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
+                DateOfPurchase,
                 Delivery,
                 Demo,
                 TherapyStatus,
@@ -113,7 +111,7 @@ const dataPushToPatient = async (req, res) => {
             patient.Repurchase.push(repurchaseData);
             await patient.save();
         } else if (Switch === 0) {
-
+            // NO CONDITION
             const repurchaseData = {
                 TotolCartiridgesPurchase,
                 DateOfPurchase: dateFormat.isValid() ? dateFormat.toDate() : null,
