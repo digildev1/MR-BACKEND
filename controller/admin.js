@@ -182,8 +182,6 @@ const handleAdminReports = async (req, res) => {
 
 
 
-
-
 // const handleAdminSideDetailReports = async (req, res) => {
 //     const adminId = req.params.id;
 
@@ -436,6 +434,7 @@ const handleSuperAdminCreate = async (req, res) => {
             return res.json("You are not Default admin");
         }
         const { Name, AdminId, Password, Gender, MobileNumber } = req.body;
+        console.log(req.body);
         const admin = await adminModels.findOne({ AdminId: AdminId });
         if (admin) {
             return res.status(400).json({
@@ -533,6 +532,7 @@ const handleCreateContentAdmin = async (req, res) => {
 
         if (role !== 'SUPER_ADMIN') return res.json({ msg: "Only SuperAdmin Create Content Admin" });
 
+
         const { Name, AdminId, Password, Gender, MobileNumber } = req.body;
         console.log({ Name, AdminId, Password, Gender, MobileNumber })
         const admin = await adminModels.findOne({ AdminId: AdminId });
@@ -587,6 +587,49 @@ const verifyJwtForClient = async (req, res) => {
     }
 }
 
+const handleAdminPatientWiseReports = async (req, res) => {
+    try {
+        const reports = await DoctorModel.find()
+            .populate({
+                path: 'patients',
+                populate: {
+                    path: 'Repurchase',
+                },
+            })
+            .exec();
+        const formattedReports = [];
+
+        reports.forEach((doctor) => {
+            doctor.patients.forEach((patient) => {
+                const repurchases = patient.Repurchase;
+                const latestRepurchase = repurchases.length > 0 ? repurchases[repurchases.length - 1] : null;
+
+                const formattedReport = {
+                    doctorName: doctor.DRNAME,
+                    doctorMobile: doctor.MOBILENO,
+                    patientName: patient.PatientName,
+                    patientType: patient.PatientType,
+                    patientMobileNumber: patient.MobileNumber,
+                    patientAge: patient.PatientAge,
+                    status: latestRepurchase ? [latestRepurchase] : [],
+                };
+
+                formattedReports.push(formattedReport);
+            });
+        });
+
+        return res.status(200).json(formattedReports);
+    } catch (error) {
+        const errMsg = error.message;
+        console.log({ errMsg });
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            errMsg,
+        });
+    }
+};
+
+
 
 
 module.exports = {
@@ -596,8 +639,10 @@ module.exports = {
     handleAdminSideDetailReports,
     handleSuperAdminCount,
     handleSuperAdminCreate,
-    handleReportAdminCreate, handleCreateContentAdmin,
-    verifyJwtForClient
+    handleReportAdminCreate,
+    handleCreateContentAdmin,
+    verifyJwtForClient,
+    handleAdminPatientWiseReports
 }
 
 

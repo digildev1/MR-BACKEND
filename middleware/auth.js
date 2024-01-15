@@ -9,6 +9,9 @@ const isAuthenticated = (req, res, next) => {
         if (authHeader) {
             const token = authHeader.split(' ')[1];
 
+
+            console.log("token: ", token);
+
             jwt.verify(token, SECRET, (err, decodedToken) => {
 
                 console.log(err);
