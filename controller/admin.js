@@ -630,6 +630,67 @@ const handleAdminPatientWiseReports = async (req, res) => {
 };
 
 
+const handleDoctorWisePatientCount = async (req, res) => {
+    try {
+        const mrs = await MrModel.find().populate({
+            path: 'doctors',
+            populate: {
+                path: 'patients',
+                populate: {
+                    path: 'Repurchase',
+                },
+            },
+        });
+
+        const doctorWiseReport = [];
+
+        mrs.forEach((mr) => {
+            const doctors = mr.doctors;
+            doctors.forEach((doctor) => {
+                const totalPatients = doctor.patients.length;
+                const totalActivePatients = doctor.patients.reduce((count, patient) => {
+                    const latestRepurchase = patient.Repurchase.length > 0 ? patient.Repurchase[patient.Repurchase.length - 1] : null;
+                    if (latestRepurchase && latestRepurchase.TherapyStatus === 'GOING') {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+
+                const totalDropouts = doctor.patients.reduce((count, patient) => {
+                    const latestRepurchase = patient.Repurchase.length > 0 ? patient.Repurchase[patient.Repurchase.length - 1] : null;
+                    if (latestRepurchase && latestRepurchase.TherapyStatus === 'Dropped out') {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+
+                doctorWiseReport.push({
+                    DIV: mr.DIV,
+                    STATE: mr.STATE,
+                    MRNAME: mr.MRNAME,
+                    MRCODE: mr.MRCODE,
+                    DOCTORNAME: doctor.DRNAME,
+                    doctorMobile: doctor.MOBILENO,
+                    doctorSccode: doctor.SCCODE,
+                    doctorLocality: doctor.LOCALITY,
+                    doctorState: doctor.STATE,
+                    totalPatients,
+                    totalActivePatients,
+                    totalDropouts,
+                });
+            });
+        });
+
+        return res.status(200).json(doctorWiseReport);
+    } catch (error) {
+        const errMsg = error.message;
+        console.log({ errMsg });
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            errMsg,
+        });
+    }
+};
 
 
 module.exports = {
@@ -642,7 +703,8 @@ module.exports = {
     handleReportAdminCreate,
     handleCreateContentAdmin,
     verifyJwtForClient,
-    handleAdminPatientWiseReports
+    handleAdminPatientWiseReports,
+    handleDoctorWisePatientCount
 }
 
 
