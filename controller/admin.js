@@ -642,9 +642,7 @@ const handleDoctorWisePatientCount = async (req, res) => {
                 },
             },
         });
-
         const doctorWiseReport = [];
-
         mrs.forEach((mr) => {
             const doctors = mr.doctors;
             doctors.forEach((doctor) => {
@@ -784,6 +782,127 @@ const handleMrAndPatientReports = async (req, res) => {
 }
 
 
+const handleDetailedReport = async (req, res) => {
+    try {
+        const mrs = await MrModel.find().populate({
+            path: 'doctors',
+            populate: {
+                path: 'patients',
+                populate: {
+                    path: 'Repurchase',
+                },
+            },
+        });
+
+        const detailedReport = [];
+
+        mrs.forEach(mr => {
+            mr.doctors.forEach(doctor => {
+                doctor.patients.forEach(patient => {
+                    const repurchaseData = patient.Repurchase.reduce((acc, repurchase) => {
+                        acc.DurationOfTherapy += repurchase.DurationOfTherapy || 0;
+                        const cartiridgesPurchase = parseFloat(repurchase.TotolCartiridgesPurchase);
+                        acc.TotolCartiridgesPurchase += isNaN(cartiridgesPurchase) ? 0 : cartiridgesPurchase;
+                        return acc;
+                    }, { DurationOfTherapy: 0, TotolCartiridgesPurchase: 0 });
+
+                    const reportEntry = {
+                        DIV: mr.DIV,
+                        STATE: mr.STATE,
+                        MRCODE: mr.MRCODE,
+                        MRNAME: mr.MRNAME,
+                        HQ: mr.HQ,
+                        DESG: mr.DESG,
+                        DRNAME: doctor.DRNAME,
+                        MOBILENO: mr.MOBILENO,
+                        PatientName: patient.PatientName,
+                        MobileNumber: patient.MobileNumber,
+                        PatientAge: patient.PatientAge,
+                        DurationOfTherapy: repurchaseData.DurationOfTherapy,
+                        TotolCartiridgesPurchase: repurchaseData.TotolCartiridgesPurchase
+                    };
+
+                    detailedReport.push(reportEntry);
+                });
+            });
+        });
+
+        return res.json(
+            detailedReport
+        );
+    } catch (error) {
+        const errMsg = error.message;
+        console.log({ errMsg });
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            errMsg,
+        });
+    }
+};
+
+
+const PrescriberReport = async (req, res) => {
+    try {
+        const mrs = await MrModel.find().populate({
+            path: 'doctors',
+            populate: {
+                path: 'patients',
+                populate: {
+                    path: 'Repurchase',
+                },
+            },
+        });
+
+        const detailedReport = [];
+
+        mrs.forEach(mr => {
+            mr.doctors.forEach(doctor => {
+                const doctorData = {
+                    DIV: mr.DIV,
+                    STATE: mr.STATE,
+                    MRCODE: mr.MRCODE,
+                    MRNAME: mr.MRNAME,
+                    HQ: mr.HQ,
+                    DESG: mr.DESG,
+                    DRNAME: doctor.DRNAME,
+                    MOBILENO: mr.MOBILENO,
+                    newPatientsCount: 0,
+                    ongoingPatientsCount: 0,
+                };
+
+                doctor.patients.forEach(patient => {
+                    // Count new patients
+                    if (patient.PatientType === 'New') {
+                        doctorData.newPatientsCount++;
+                    }
+
+                    // Count ongoing patients
+                    const ongoingRepurchase = patient.Repurchase.find(repurchase => repurchase.TherapyStatus === 'Ongoing');
+                    if (ongoingRepurchase) {
+                        doctorData.ongoingPatientsCount++;
+                    }
+                });
+
+                detailedReport.push(doctorData);
+            });
+        });
+
+        return res.json(
+            detailedReport
+        );
+    } catch (error) {
+        const errMsg = error.message;
+        console.log({ errMsg });
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            errMsg,
+        });
+    }
+};
+
+
+
+
 module.exports = {
     handleAdminCreateAccounts,
     handleAdminLogin,
@@ -796,7 +915,9 @@ module.exports = {
     verifyJwtForClient,
     handleAdminPatientWiseReports,
     handleDoctorWisePatientCount,
-    handleMrAndPatientReports
+    handleMrAndPatientReports,
+    handleDetailedReport,
+    PrescriberReport
 }
 
 
