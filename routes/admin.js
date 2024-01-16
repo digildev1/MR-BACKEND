@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router();
 
 
-const { handleAdminCreateAccounts, handleAdminLogin, handleAdminReports, handleAdminSideDetailReports, handleSuperAdminCount, handleSuperAdminCreate, handleCreateContentAdmin, verifyJwtForClient, handleReportAdminCreate, handleAdminPatientWiseReports, handleDoctorWisePatientCount } = require('../controller/admin');
+const { handleAdminCreateAccounts, handleAdminLogin, handleAdminReports, handleAdminSideDetailReports, handleSuperAdminCount, handleSuperAdminCreate, handleCreateContentAdmin, verifyJwtForClient, handleReportAdminCreate, handleAdminPatientWiseReports, handleDoctorWisePatientCount, handleMrAndPatientReports } = require('../controller/admin');
 const { isAuthenticated } = require("../middleware/auth");
 
 
@@ -33,6 +33,11 @@ router.get("/admin-patient-wise-reports", handleAdminPatientWiseReports);
 
 
 router.get("/Doctor-Wise-Patient-Recruited-Count", handleDoctorWisePatientCount);
+
+
+router.get("/Mr-And-Patient-Reports", handleMrAndPatientReports);
+
+
 
 
 module.exports = router

@@ -4,7 +4,8 @@ const adminModels = require("../models/admin");
 const MrModel = require("../models/mr");
 const DoctorModel = require('../models/doctor');
 const mongoose = require('mongoose');
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const patient = require("../models/patient");
 const SECRET = process.env.SECRET;
 
 
@@ -692,6 +693,96 @@ const handleDoctorWisePatientCount = async (req, res) => {
     }
 };
 
+const handleMrAndPatientReports = async (req, res) => {
+    try {
+
+        const mrs = await MrModel.find().populate({
+            path: 'doctors',
+            populate: {
+                path: 'patients',
+                populate: {
+                    path: 'Repurchase',
+                },
+            },
+        });
+
+
+        const MrWisePatient = []
+
+        mrs.forEach(mr => {
+            const doctor = mr.doctors;
+            doctor.forEach(doctor => {
+                const totalPatients = doctor.patients.length;
+                console.log(totalPatients);
+                const totalActivePatients = doctor.patients.reduce((count, patient) => {
+                    const latestRepurchase = patient.Repurchase.length > 0 ? patient.Repurchase[patient.Repurchase.length - 1] : null;
+                    if (latestRepurchase && latestRepurchase.TherapyStatus === 'Ongoing') {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+
+                const totalDropouts = doctor.patients.reduce((count, patient) => {
+                    const latestRepurchase = patient.Repurchase.length > 0 ? patient.Repurchase[patient.Repurchase.length - 1] : null;
+                    if (latestRepurchase && latestRepurchase.TherapyStatus === 'Dropped out') {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+
+                const totalCartidegesPurchase = doctor.patients.reduce((count, patient) => {
+                    patient.Repurchase.forEach(repurchase => {
+
+                        const cartiridgesPurchase = parseFloat(repurchase.TotolCartiridgesPurchase);
+                        if (!isNaN(cartiridgesPurchase)) {
+                            count += cartiridgesPurchase;
+                        }
+                    });
+
+                    return count;
+                }, 0);
+
+
+
+
+                const totalNewPatients = doctor.patients.reduce((count, patient) => {
+                    if (patient.PatientType === 'New') {
+                        count++;
+                    }
+
+                    return count;
+                }, 0);
+
+                MrWisePatient.push({
+                    DIV: mr.DIV,
+                    STATE: mr.STATE,
+                    MRNAME: mr.MRNAME,
+                    MRCODE: mr.MRCODE,
+                    totalPatients,
+                    totalNewPatients,
+                    totalActivePatients,
+                    totalCartidegesPurchase,
+                    totalDropouts
+                })
+
+
+            })
+        })
+
+
+        return res.json(MrWisePatient);
+
+
+    } catch (error) {
+        const errMsg = error.message;
+        console.log({ errMsg });
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            errMsg,
+        });
+    }
+}
+
 
 module.exports = {
     handleAdminCreateAccounts,
@@ -704,7 +795,8 @@ module.exports = {
     handleCreateContentAdmin,
     verifyJwtForClient,
     handleAdminPatientWiseReports,
-    handleDoctorWisePatientCount
+    handleDoctorWisePatientCount,
+    handleMrAndPatientReports
 }
 
 
